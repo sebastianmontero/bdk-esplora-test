@@ -20,7 +20,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .unwrap();
 
     let prev_tip = wallet.latest_checkpoint();
-    // TO GET THE CORRECT CONFIRMATION TIME I ALSO HAD TO PASS IN THE UNCONFIRMED TXIDS to the scan method
     let keychain_spks = wallet.spks_of_all_keychains();
     let (update_graph, last_active_indices) = blockchain
         .scan_txs_with_keychains(
@@ -45,8 +44,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     wallet.apply_update(update).unwrap();
     wallet.commit().unwrap();
 
-    // let keychain_spks = wallet.spks_of_all_keychains();
-
     let unused_spks: Vec<ScriptBuf> = wallet
         .spk_index()
         .unused_spks(..)
@@ -63,7 +60,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     )]
     .into();
 
-    // let prev_tip = wallet.latest_checkpoint();
     let unconfirmed_txids: Vec<Txid> = wallet
         .transactions()
         .filter(|canonical_tx| !canonical_tx.chain_position.is_confirmed())
