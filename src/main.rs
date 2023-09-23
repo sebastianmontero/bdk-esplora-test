@@ -3,6 +3,7 @@ use bdk::bitcoin::Txid;
 use bdk::wallet::Update;
 
 use bdk_esplora::{esplora_client, EsploraAsyncExt};
+use std::collections::BTreeMap;
 use std::str::FromStr;
 
 #[tokio::main]
@@ -44,7 +45,24 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     wallet.apply_update(update).unwrap();
     wallet.commit().unwrap();
 
-    let keychain_spks = wallet.spks_of_all_keychains();
+    // let keychain_spks = wallet.spks_of_all_keychains();
+
+    let unused_spks: Vec<ScriptBuf> = wallet
+        .spk_index()
+        .unused_spks(..)
+        .into_iter()
+        .map(|((_, _), script)| ScriptBuf::from(script))
+        .collect();
+
+    let unused_spks = [(
+        (),
+        unused_spks
+            .into_iter()
+            .enumerate()
+            .map(|(i, spk)| (i as u32, spk)),
+    )]
+    .into();
+
     // let prev_tip = wallet.latest_checkpoint();
     let unconfirmed_txids: Vec<Txid> = wallet
         .transactions()
@@ -56,9 +74,9 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let outpoints = wallet.list_unspent().map(|utxo| utxo.outpoint);
     let outpoints = Box::new(outpoints);
 
-    let (update_graph, last_active_indices) = blockchain
+    let (update_graph, _) = blockchain
         .scan_txs_with_keychains(
-            keychain_spks,
+            unused_spks,
             unconfirmed_txids,
             outpoints,
             request_stop_gap,
@@ -72,7 +90,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         .update_local_chain(prev_tip, missing_heights)
         .await?;
     let update = Update {
-        last_active_indices,
+        last_active_indices: BTreeMap::new(),
         graph: update_graph,
         chain: Some(chain_update),
     };
@@ -97,5 +115,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             dbg!(last_seen);
         }
     }
+    dbg!(wallet.list_unspent().last());
+
     Ok(())
 }
