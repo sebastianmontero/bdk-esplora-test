@@ -6,8 +6,8 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-bdk = { git = "https://github.com/bitcoindevkit/bdk", rev = "4ee11aae12f5f5b636008195998833268d5edc66", default-features = false, features = ["compiler", "dev-getrandom-wasm", "std"] }
-bdk_esplora = { git = "https://github.com/bitcoindevkit/bdk", rev = "4ee11aae12f5f5b636008195998833268d5edc66", default-features = false, features = ["async-https", "std"] }
+bdk = { git = "https://github.com/danielabrozzoni/bdk", rev = "7eafd6e6457298ad3d34590a98815607dcdae6bd", default-features = false, features = ["compiler", "dev-getrandom-wasm", "std"] }
+bdk_esplora = { git = "https://github.com/danielabrozzoni/bdk", rev = "7eafd6e6457298ad3d34590a98815607dcdae6bd", default-features = false, features = ["async-https", "std"] }
 once_cell = "1.18"
 serde = "=1.0.171"
 tokio = { version = "1", features = ["full"] }
