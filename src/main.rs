@@ -29,6 +29,12 @@ async fn main() {
         )
         .await
         .unwrap();
+    let update = Update {
+        graph: update_graph,
+        ..Default::default()
+    };
+    wallet.apply_update(update).unwrap();
+
     let missing_heights = wallet.tx_graph().missing_heights(wallet.local_chain());
     let chain_update = blockchain
         .update_local_chain(prev_tip, missing_heights)
@@ -36,8 +42,8 @@ async fn main() {
         .unwrap();
     let update = Update {
         last_active_indices,
-        graph: update_graph,
         chain: Some(chain_update),
+        ..Default::default()
     };
     wallet.apply_update(update).unwrap();
     wallet.commit().unwrap();
